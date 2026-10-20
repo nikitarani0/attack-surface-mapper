@@ -9,7 +9,7 @@ def get_connection() -> sqlite3.Connection:
     """Open a connection, ensuring the data/ dir and schema exist."""
     DB_PATH.parent.mkdir(exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row          # rows accessible by column name
+    conn.row_factory = sqlite3.Row            # rows accessible by column name
     conn.execute("PRAGMA foreign_keys = ON")  # enforce FK relationships
     return conn
 
@@ -19,11 +19,11 @@ def init_db() -> None:
     conn = get_connection()
     conn.executescript("""
     CREATE TABLE IF NOT EXISTS scans (
-        id         INTEGER PRIMARY KEY AUTOINCREMENT,
-        target     TEXT NOT NULL,
-        started_at TEXT NOT NULL,
+        id          INTEGER PRIMARY KEY AUTOINCREMENT,
+        target      TEXT NOT NULL,
+        started_at  TEXT NOT NULL,
         finished_at TEXT,
-        status     TEXT DEFAULT 'running'
+        status      TEXT DEFAULT 'running'
     );
 
     CREATE TABLE IF NOT EXISTS subdomains (
@@ -38,15 +38,15 @@ def init_db() -> None:
     );
 
     CREATE TABLE IF NOT EXISTS hosts (
-        id          INTEGER PRIMARY KEY AUTOINCREMENT,
-        scan_id     INTEGER NOT NULL,
+        id           INTEGER PRIMARY KEY AUTOINCREMENT,
+        scan_id      INTEGER NOT NULL,
         subdomain_id INTEGER,
-        url         TEXT,
-        status_code INTEGER,
-        title       TEXT,
-        tech        TEXT,
-        waf         TEXT,
-        server      TEXT,
+        url          TEXT,
+        status_code  INTEGER,
+        title        TEXT,
+        tech         TEXT,
+        waf          TEXT,
+        server       TEXT,
         FOREIGN KEY (scan_id) REFERENCES scans(id)
     );
 
@@ -62,12 +62,12 @@ def init_db() -> None:
     );
 
     CREATE TABLE IF NOT EXISTS cloud_assets (
-        id                INTEGER PRIMARY KEY AUTOINCREMENT,
-        scan_id           INTEGER NOT NULL,
-        type              TEXT,
-        identifier        TEXT,
-        provider          TEXT,
-        public            INTEGER DEFAULT 0,
+        id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+        scan_id            INTEGER NOT NULL,
+        type               TEXT,
+        identifier         TEXT,
+        provider           TEXT,
+        public             INTEGER DEFAULT 0,
         takeover_candidate INTEGER DEFAULT 0,
         FOREIGN KEY (scan_id) REFERENCES scans(id)
     );
@@ -84,12 +84,12 @@ def init_db() -> None:
     );
 
     CREATE TABLE IF NOT EXISTS secrets (
-        id            INTEGER PRIMARY KEY AUTOINCREMENT,
-        scan_id       INTEGER NOT NULL,
-        type          TEXT,
+        id             INTEGER PRIMARY KEY AUTOINCREMENT,
+        scan_id        INTEGER NOT NULL,
+        type           TEXT,
         value_redacted TEXT,
-        location      TEXT,
-        severity      TEXT,
+        location       TEXT,
+        severity       TEXT,
         FOREIGN KEY (scan_id) REFERENCES scans(id)
     );
 
