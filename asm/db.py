@@ -173,3 +173,23 @@ def get_subdomains(scan_id: int) -> list[sqlite3.Row]:
     ).fetchall()
     conn.close()
     return rows
+def update_subdomain_resolution(scan_id: int, hostname: str, resolved: bool, ip: str | None) -> None:
+    """Mark a subdomain as resolved (or not) and store its IP."""
+    conn = get_connection()
+    conn.execute(
+        "UPDATE subdomains SET resolved = ?, ip = ? WHERE scan_id = ? AND hostname = ?",
+        (1 if resolved else 0, ip, scan_id, hostname),
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_resolved_subdomains(scan_id: int) -> list[sqlite3.Row]:
+    """Return only subdomains that resolved — the live set for downstream modules."""
+    conn = get_connection()
+    rows = conn.execute(
+        "SELECT hostname, ip FROM subdomains WHERE scan_id = ? AND resolved = 1 ORDER BY hostname",
+        (scan_id,),
+    ).fetchall()
+    conn.close()
+    return rows
