@@ -247,3 +247,26 @@ def get_services(scan_id: int) -> list[sqlite3.Row]:
     ).fetchall()
     conn.close()
     return rows
+def insert_cloud_asset(scan_id: int, asset_type: str, identifier: str,
+                       provider: str, public: bool, takeover_candidate: bool) -> None:
+    conn = get_connection()
+    conn.execute(
+        """INSERT INTO cloud_assets
+           (scan_id, type, identifier, provider, public, takeover_candidate)
+           VALUES (?, ?, ?, ?, ?, ?)""",
+        (scan_id, asset_type, identifier, provider,
+         1 if public else 0, 1 if takeover_candidate else 0),
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_cloud_assets(scan_id: int) -> list[sqlite3.Row]:
+    conn = get_connection()
+    rows = conn.execute(
+        """SELECT type, identifier, provider, public, takeover_candidate
+           FROM cloud_assets WHERE scan_id = ? ORDER BY provider, type""",
+        (scan_id,),
+    ).fetchall()
+    conn.close()
+    return rows
