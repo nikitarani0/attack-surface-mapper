@@ -312,3 +312,37 @@ def get_secrets(scan_id: int) -> list[sqlite3.Row]:
     ).fetchall()
     conn.close()
     return rows
+def insert_finding(scan_id: int, title: str, severity: str, category: str,
+                   evidence: str, correlation_type: str) -> None:
+    conn = get_connection()
+    conn.execute(
+        """INSERT INTO findings
+           (scan_id, title, severity, category, evidence, correlation_type)
+           VALUES (?, ?, ?, ?, ?, ?)""",
+        (scan_id, title, severity, category, evidence, correlation_type),
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_findings(scan_id: int) -> list[sqlite3.Row]:
+    """Return findings ordered by severity (critical first)."""
+    conn = get_connection()
+    rows = conn.execute(
+        """SELECT title, severity, category, evidence, correlation_type
+           FROM findings WHERE scan_id = ?
+           ORDER BY CASE severity
+               WHEN 'critical' THEN 1 WHEN 'high' THEN 2
+               WHEN 'medium' THEN 3 WHEN 'low' THEN 4 ELSE 5 END""",
+        (scan_id,),
+    ).fetchall()
+    conn.close()
+    return rows
+
+
+def clear_findings(scan_id: int) -> None:
+    """Wipe prior findings for a scan so re-running correlation isn't additive."""
+    conn = get_connection()
+    conn.execute("DELETE FROM findings WHERE scan_id = ?", (scan_id,))
+    conn.commit()
+    conn.close()
