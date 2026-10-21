@@ -216,3 +216,34 @@ def get_hosts(scan_id: int) -> list[sqlite3.Row]:
     ).fetchall()
     conn.close()
     return rows
+def get_unique_resolved_ips(scan_id: int) -> list[str]:
+    """Distinct IPs from resolved subdomains — scan each IP once, not per-hostname."""
+    conn = get_connection()
+    rows = conn.execute(
+        "SELECT DISTINCT ip FROM subdomains WHERE scan_id = ? AND resolved = 1 AND ip IS NOT NULL",
+        (scan_id,),
+    ).fetchall()
+    conn.close()
+    return [r["ip"] for r in rows]
+
+
+def insert_service(scan_id: int, ip: str, port: int, protocol: str,
+                   service: str | None, version: str | None) -> None:
+    conn = get_connection()
+    conn.execute(
+        """INSERT INTO services (scan_id, ip, port, protocol, service, version)
+           VALUES (?, ?, ?, ?, ?, ?)""",
+        (scan_id, ip, port, protocol, service, version),
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_services(scan_id: int) -> list[sqlite3.Row]:
+    conn = get_connection()
+    rows = conn.execute(
+        "SELECT ip, port, protocol, service, version FROM services WHERE scan_id = ? ORDER BY ip, port",
+        (scan_id,),
+    ).fetchall()
+    conn.close()
+    return rows
