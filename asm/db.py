@@ -346,3 +346,41 @@ def clear_findings(scan_id: int) -> None:
     conn.execute("DELETE FROM findings WHERE scan_id = ?", (scan_id,))
     conn.commit()
     conn.close()
+def get_scan(scan_id: int) -> sqlite3.Row | None:
+    conn = get_connection()
+    row = conn.execute("SELECT * FROM scans WHERE id = ?", (scan_id,)).fetchone()
+    conn.close()
+    return row
+
+
+def get_scan_summary(scan_id: int) -> dict:
+    """Assemble all data for a scan into one dict for reporting."""
+    conn = get_connection()
+
+    def rows_to_dicts(query, params=(scan_id,)):
+        return [dict(r) for r in conn.execute(query, params).fetchall()]
+
+    scan = conn.execute("SELECT * FROM scans WHERE id = ?", (scan_id,)).fetchone()
+
+    summary = {
+        "scan": dict(scan) if scan else {},
+        "subdomains": rows_to_dicts(
+            "SELECT hostname, source, resolved, ip FROM subdomains WHERE scan_id = ? ORDER BY hostname"),
+        "hosts": rows_to_dicts(
+            "SELECT url, status_code, title, server, tech, waf FROM hosts WHERE scan_id = ? ORDER BY url"),
+        "services": rows_to_dicts(
+            "SELECT ip, port, protocol, service, version FROM services WHERE scan_id = ? ORDER BY ip, port"),
+        "cloud_assets": rows_to_dicts(
+            "SELECT type, identifier, provider, public, takeover_candidate FROM cloud_assets WHERE scan_id = ?"),
+        "endpoints": rows_to_dicts(
+            "SELECT url, method, source FROM endpoints WHERE scan_id = ? ORDER BY url"),
+        "secrets": rows_to_dicts(
+            "SELECT type, value_redacted, location, severity FROM secrets WHERE scan_id = ?"),
+        "findings": rows_to_dicts(
+            """SELECT title, severity, category, evidence, correlation_type
+               FROM findings WHERE scan_id = ?
+               ORDER BY CASE severity WHEN 'critical' THEN 1 WHEN 'high' THEN 2
+               WHEN 'medium' THEN 3 WHEN 'low' THEN 4 ELSE 5 END"""),
+    }
+    conn.close()
+    return summary
