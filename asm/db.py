@@ -193,3 +193,26 @@ def get_resolved_subdomains(scan_id: int) -> list[sqlite3.Row]:
     ).fetchall()
     conn.close()
     return rows
+def insert_host(scan_id: int, subdomain_id: int | None, url: str,
+                status_code: int | None, title: str | None,
+                tech: str | None, waf: str | None, server: str | None) -> None:
+    """Insert a probed live web host into the hosts table."""
+    conn = get_connection()
+    conn.execute(
+        """INSERT INTO hosts
+           (scan_id, subdomain_id, url, status_code, title, tech, waf, server)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+        (scan_id, subdomain_id, url, status_code, title, tech, waf, server),
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_hosts(scan_id: int) -> list[sqlite3.Row]:
+    conn = get_connection()
+    rows = conn.execute(
+        "SELECT url, status_code, title, server, tech, waf FROM hosts WHERE scan_id = ? ORDER BY url",
+        (scan_id,),
+    ).fetchall()
+    conn.close()
+    return rows
