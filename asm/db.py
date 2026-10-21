@@ -270,3 +270,45 @@ def get_cloud_assets(scan_id: int) -> list[sqlite3.Row]:
     ).fetchall()
     conn.close()
     return rows
+def insert_endpoint(scan_id: int, host_id: int | None, url: str,
+                    method: str | None, params: str | None, source: str) -> None:
+    conn = get_connection()
+    conn.execute(
+        """INSERT INTO endpoints (scan_id, host_id, url, method, params, source)
+           VALUES (?, ?, ?, ?, ?, ?)""",
+        (scan_id, host_id, url, method, params, source),
+    )
+    conn.commit()
+    conn.close()
+
+
+def insert_secret(scan_id: int, secret_type: str, value_redacted: str,
+                  location: str, severity: str) -> None:
+    conn = get_connection()
+    conn.execute(
+        """INSERT INTO secrets (scan_id, type, value_redacted, location, severity)
+           VALUES (?, ?, ?, ?, ?)""",
+        (scan_id, secret_type, value_redacted, location, severity),
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_endpoints(scan_id: int) -> list[sqlite3.Row]:
+    conn = get_connection()
+    rows = conn.execute(
+        "SELECT url, method, source FROM endpoints WHERE scan_id = ? ORDER BY url",
+        (scan_id,),
+    ).fetchall()
+    conn.close()
+    return rows
+
+
+def get_secrets(scan_id: int) -> list[sqlite3.Row]:
+    conn = get_connection()
+    rows = conn.execute(
+        "SELECT type, value_redacted, location, severity FROM secrets WHERE scan_id = ? ORDER BY severity",
+        (scan_id,),
+    ).fetchall()
+    conn.close()
+    return rows
