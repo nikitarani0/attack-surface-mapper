@@ -135,7 +135,19 @@ def insert_subdomains(scan_id: int, hostnames: set[str], source: str) -> int:
     """
     Bulk-insert subdomains for a scan. Ignores duplicates via the
     UNIQUE(scan_id, hostname) constraint. Returns count newly inserted.
+    Defensively filters to clean, non-empty strings only.
     """
+    # Guarantee we only bind strings — flaky sources sometimes yield
+    # nested/odd types, which SQLite can't bind.
+    clean = {
+        str(h).strip().lower()
+        for h in hostnames
+        if isinstance(h, str) and h.strip()
+    }
+
+    if not clean:
+        return 0
+
     conn = get_connection()
     before = conn.execute(
         "SELECT COUNT(*) FROM subdomains WHERE scan_id = ?", (scan_id,)
@@ -143,7 +155,7 @@ def insert_subdomains(scan_id: int, hostnames: set[str], source: str) -> int:
 
     conn.executemany(
         "INSERT OR IGNORE INTO subdomains (scan_id, hostname, source) VALUES (?, ?, ?)",
-        [(scan_id, h, source) for h in hostnames],
+        [(scan_id, h, source) for h in clean],
     )
     conn.commit()
 
@@ -152,7 +164,6 @@ def insert_subdomains(scan_id: int, hostnames: set[str], source: str) -> int:
     ).fetchone()[0]
     conn.close()
     return after - before
-
 
 def get_subdomains(scan_id: int) -> list[sqlite3.Row]:
     conn = get_connection()
