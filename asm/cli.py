@@ -14,11 +14,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
-    # asm scan --domain X [--ports]
+    # asm scan --domain X [--ports] [--passive]
     p_scan = sub.add_parser("scan", help="Run a full attack-surface scan on a domain")
-    p_scan.add_argument("--domain", "-d", required=True, help="Target domain (authorized scope only)")
+    p_scan.add_argument("--domain", "-d", required=True,
+                        help="Target domain (authorized scope only)")
     p_scan.add_argument("--ports", action="store_true",
                         help="Enable port scanning (intrusive — authorized targets only)")
+    p_scan.add_argument("--passive", action="store_true",
+                        help="Passive-only: no requests sent to target. "
+                             "Compliant with programs that ban automated scanning.")
 
     # asm report --scan-id N
     p_report = sub.add_parser("report", help="Regenerate reports for an existing scan")
@@ -50,7 +54,14 @@ def main():
     args = parser.parse_args()
 
     if args.command == "scan":
-        asyncio.run(run_full_scan(args.domain, skip_ports=not args.ports))
+        # --ports is ignored in passive mode (port scanning sends traffic to target)
+        if args.passive and args.ports:
+            print("[cli] --ports ignored: passive mode sends no traffic to the target.")
+        asyncio.run(run_full_scan(
+            args.domain,
+            skip_ports=not args.ports,
+            passive=args.passive,
+        ))
     elif args.command == "report":
         report_mod.generate_reports(args.scan_id)
     elif args.command == "list":

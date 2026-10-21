@@ -1,0 +1,269 @@
+{
+  "scan": {
+    "id": 13,
+    "target": "example.com",
+    "started_at": "2026-10-21T06:36:30.385583+00:00",
+    "finished_at": "2026-10-21T06:36:42.442006+00:00",
+    "status": "done"
+  },
+  "subdomains": [
+    {
+      "hostname": "20mail2.example.com",
+      "source": "rapiddns",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "aaaa.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "animation.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "banklogin.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "bigip.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "c2-financial-proxy.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "coffee.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "embeddings.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "excluded.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "exfil.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "foodapp.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "grid-ops.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "instagrarn-verify.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "joboffers.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "live2.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "livefeed.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "mint.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "myvcenter.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "nubebase.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "offers.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "onramp.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "replace-with-your-collaborator.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "retaildashboard.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "scamsite.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "sea-1.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "sea-2.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "security-test.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "shokomir.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "soundcloud.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "sub0.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "sub10.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "sub15.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "sub20.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "sub4.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "sub5.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "sub6.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "sub7.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "sub8.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "sub9.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "weu-1.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    },
+    {
+      "hostname": "www.example.com",
+      "source": "hackertarget",
+      "resolved": 1,
+      "ip": "104.20.23.154"
+    },
+    {
+      "hostname": "your-system.example.com",
+      "source": "virustotal",
+      "resolved": 0,
+      "ip": null
+    }
+  ],
+  "hosts": [],
+  "services": [],
+  "cloud_assets": [],
+  "endpoints": [],
+  "secrets": [],
+  "findings": []
+}

@@ -77,8 +77,12 @@ async def check_takeover(hostname: str, asset_type: str,
     return False
 
 
-async def run_cloud_discovery(scan_id: int, concurrency: int = 20) -> None:
-    """Classify cloud-hosted subdomains, check S3 exposure + takeover candidates."""
+async def run_cloud_discovery(scan_id: int, concurrency: int = 20,
+                              passive: bool = False) -> None:
+    """
+    Classify cloud-hosted subdomains. In passive mode, classify by hostname
+    only — skip the S3 public-check and takeover-check, which fetch the asset.
+    """
     rows = db.get_subdomains(scan_id)
     hostnames = [r["hostname"] for r in rows]
 
@@ -86,7 +90,8 @@ async def run_cloud_discovery(scan_id: int, concurrency: int = 20) -> None:
         print("[cloud] No subdomains — run subdomain enum first")
         return
 
-    print(f"[cloud] Scanning {len(hostnames)} subdomains for cloud assets...")
+    label = "passive, classify-only" if passive else "with exposure checks"
+    print(f"[cloud] Scanning {len(hostnames)} subdomains for cloud assets ({label})...")
 
     sem = asyncio.Semaphore(concurrency)
     headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) asm-recon/0.1"}
@@ -97,14 +102,16 @@ async def run_cloud_discovery(scan_id: int, concurrency: int = 20) -> None:
             if not asset_type:
                 return None
 
-            provider = asset_type.split("-")[0]  # aws / azure / gcp / etc.
+            provider = asset_type.split("-")[0]
             public = False
             takeover = False
 
-            async with aiohttp.ClientSession(headers=headers) as session:
-                if asset_type == "aws-s3":
-                    public = await check_s3_public(f"https://{hostname}", session)
-                takeover = await check_takeover(hostname, asset_type, session)
+            # Passive mode: classify only, no requests to the asset.
+            if not passive:
+                async with aiohttp.ClientSession(headers=headers) as session:
+                    if asset_type == "aws-s3":
+                        public = await check_s3_public(f"https://{hostname}", session)
+                    takeover = await check_takeover(hostname, asset_type, session)
 
             return {
                 "type": asset_type, "identifier": hostname,
@@ -124,10 +131,13 @@ async def run_cloud_discovery(scan_id: int, concurrency: int = 20) -> None:
             if r["takeover"]:
                 takeover_count += 1
 
-    print(f"[cloud] Done: {found} cloud assets | "
-          f"{public_count} public S3 | {takeover_count} takeover candidates")
-    if takeover_count:
-        print(f"[cloud] ⚠ {takeover_count} TAKEOVER CANDIDATE(S) — verify manually before reporting")
+    if passive:
+        print(f"[cloud] Done: {found} cloud assets classified (no exposure checks in passive mode)")
+    else:
+        print(f"[cloud] Done: {found} cloud assets | "
+              f"{public_count} public S3 | {takeover_count} takeover candidates")
+        if takeover_count:
+            print(f"[cloud] ⚠ {takeover_count} TAKEOVER CANDIDATE(S) — verify manually")
 
 
 if __name__ == "__main__":
