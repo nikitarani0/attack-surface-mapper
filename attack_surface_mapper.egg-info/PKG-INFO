@@ -1,0 +1,7 @@
+Metadata-Version: 2.4
+Name: attack-surface-mapper
+Version: 1.0.0
+Requires-Dist: aiohttp
+Requires-Dist: aiodns
+Requires-Dist: python-dotenv
+Dynamic: requires-dist
